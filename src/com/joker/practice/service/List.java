@@ -7,54 +7,42 @@ package com.joker.practice.service;
 public interface List {
 
     /**
-     * 新增元素
-     * @param obj
+     * 在数组末尾添加元素
      */
     void add(Object obj);
 
     /**
-     * 在指定位置新增元素
-     * @param index
-     * @param obj
+     * 在指定位置添加元素
      */
     void add(int index,Object obj);
 
     /**
-     * 批量添加元素
-     * @param index
-     * @param list
+     * 批量添加
      */
     void add(int index,List list);
 
     /**
-     * 修改元素值
-     * @param index
-     * @param obj
+     * 修改元素
      */
     void set(int index,Object obj);
 
     /**
-     * 删除指定位置的元素
-     * @param index
+     * 删除元素
      */
     void remove(int index);
 
     /**
      * 删除元素
-     * @param obj
      */
     void remove(Object obj);
 
     /**
-     * 获取指定位置的元素
-     * @param index
-     * @return
+     * 获取元素
      */
     Object get(int index);
 
     /**
-     * 获取元素数量
-     * @return
+     * 获取长度
      */
     int size();
 }

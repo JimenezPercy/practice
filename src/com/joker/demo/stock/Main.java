@@ -39,11 +39,13 @@ public class Main {
 				//物品管理
 				case MainMenuOption.GOODS_MANAGE:
 					while(true) {
-						//1.ѯ�ʲ���
+						//1.展示管理
+						//2.ִ询问操作
 						int goodsOption = goodsView.goodsMenus();
-						//2.ִ�в���
+
+						//3.执行操作
 						goodsView.optionChoose(goodsOption);
-						//3.��֤�Ƿ��˳�
+						//验证是否退出
 						if(goodsOption == GoodsOption.GOODS_EXIT) {
 							break;
 						}

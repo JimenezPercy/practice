@@ -25,8 +25,8 @@ public class GoodsView {
 	public int goodsMenus() {
 		int index = 0;
 		do {
-			System.out.println("��ѡ����Ʒ�Ĳ�����1.���|2.����|3.�����ϼ��˵�");
-			System.out.print("������������ͣ�");
+			System.out.println("请选择物品操作：1.入库|2.出库|3.返回上级菜单");
+			System.out.print("请输入操作类型：");
 			index = scanner.nextInt();
 		}while(index != GoodsOption.GOODS_IN &&
 				index != GoodsOption.GOODS_OUT && 
@@ -36,7 +36,7 @@ public class GoodsView {
 	
 	
 	/**
-	 * ִ�в���
+	 * ִ执行操作
 	 * @param index
 	 */
 	public void optionChoose(int index) {
@@ -48,67 +48,60 @@ public class GoodsView {
 				this.outGoods();
 				break;
 			case GoodsOption.GOODS_EXIT:
-				System.out.println("��Ʒ�������˳�����");
+				System.out.println("物品库存管理退出……");
 				break;
 		}
 	}
 	
 	/**
-	 * ��Ʒ���
+	 * 物品入库
 	 */
 	private void inGoods() {
-		//1.չʾ��Ʒ�����б�
+		//1.展示物品类型列表
 		boolean gtFlag = this.showGoodsTypeList();
 		if(gtFlag) {
-			//2.ѡ����Ʒ����
-			System.out.print("���������������Ʒ����ID:");
+			//2.请选择物品类型
+			System.out.print("请输入需要操作的物品类型ID:");
 			int gtId = this.scanner.nextInt();
 			GoodsType[] gts =
 					this.gtService.queryGoodsTypesList(
 							new GoodsType().setId(gtId));
 			if(gts.length == 0) {
-				//��Ʒ���Ͳ�����
-				System.out.println("��ѡ��Ʒ���Ͳ����ڣ�");
+				//物品类型不存在
+				System.out.println("所选物品类型不存在：");
 				return;
 			}else {
-				//��Ʒ���ʹ���
-				//��Ʒ����
+				//物品类型存在
 				GoodsType gt = gts[0];
-				//3.չʾ��ǰ��������Ʒ���б�
+				//展示当前类型物品列表
 				this.showGoodsList(gtId);
-				//4.���������Ϣ��ͬʱ�����Ʒ�Ƿ���ڣ��������޸Ļ���������
-				System.out.print("��������Ʒ��ţ�");
+				//4.输入入库信息，同事检查物品是否存在
+				System.out.print("请输入物品编号：");
 				String goodCode = this.scanner.next();
 				Goods g = this.gService.queryGoodsByGoodsCode(
 						new Goods().setGoodsCode(goodCode));
 				if(g == null) {
-					System.out.println("��Ʒ��Ų����ڣ�����������Ʒ�����Ϣ");
-					//��Ҫ����
+					System.out.println("物品编号不存在，请新增该物品入库信息！");
+					//需要新增
 					g = new Goods();
-					System.out.print("��������Ʒ���ƣ�");
+					System.out.print("请输入物品名称：");
 					g.setName(this.scanner.next());
-					System.out.print("��������Ʒ��С���������");
+					System.out.print("请输入物品最小入库数量：");
 					g.setMinNumber(this.scanner.nextInt());
-					System.out.print("��������Ʒ������������");
+					System.out.print("请输入物品最大入库数量：");
 					g.setMaxNumber(this.scanner.nextInt());
-					System.out.print("��������Ʒ���������");
+					System.out.print("请输入物品入库数量：");
 					g.setNumber(this.scanner.nextInt());
-					//��Ʒ���ͷ����ȥ
+					//设置类型
 					g.setType(gt);
-					//��֤��
-					//1.��С����� ҪС�� ��������
-					//2.��С������Լ������������Ϊ����
-					//3.�������ҪС����������
+					//验证
 					this.gService.insertGoods(g);
 				}else {
-					//��Ҫ�޸�
-					System.out.print("��������Ʒ���������");
-					//�����������ԭ�������Ļ����ϣ��ۼ�
+					//需要修改
+					System.out.print("请输入物品入库数量：");
+					//增加数量
 					g.setNumber(g.getNumber() + this.scanner.nextInt());
-					//��֤��
-					//1.��С����� ҪС�� ��������
-					//2.��С������Լ������������Ϊ����
-					//3.�������ҪС����������
+					//验证
 					this.gService.updateGoods(g);
 				}
 				
@@ -117,33 +110,23 @@ public class GoodsView {
 		}
 	}
 	/**
-	 * ��Ʒ���⣺��ҵ
+	 * 出库
 	 */
 	private void outGoods() {
-		/*
-		 * 1.�ж���Ʒ�����Ƿ����
-		 * 2.�ж���Ʒ�Ƿ���ڣ�ͬʱ�жϸ���Ʒ�Ƿ�ɳ���
-		 * 3.��֤���������Ƿ��ڿ�淶Χ֮��
-		 * 4.��֤������Ƿ��ܼ���ʹ��
-		 * 5.�޸�
-		 * 6.�������Ʒ�������Ϊ0��ѯ���Ƿ���֣�����֣���ɾ���ü�¼
-		 */
-		
 		
 	}
 	
 	/**
-	 * չʾ��Ʒ�б�
+	 * 展示物品列表
 	 */
 	private void showGoodsList(int gtId) {
 		Goods[] gs = this.gService.queryGoodsListByTypeId(
 					new Goods().setType(new GoodsType().setId(gtId))
 				);
-		
-		//��ʼ�б�չʾ
+
 		System.out.println("------------------------------------");
 		if(gs.length == 0) {
-			System.out.println("����Ʒ�����Ϣ��");
+			System.out.println("无物品库存信息！");
 		}
 		for(Goods g : gs) {
 			System.out.println("|"
@@ -154,7 +137,7 @@ public class GoodsView {
 					+ g.getNumber() + "|"
 					+ g.getMaxNumber() + "|"
 					+ g.getMinNumber() + "|"
-					+ (g.getStatus() ? "����":"������") + "|"
+					+ (g.getStatus() ? "可用":"不可用") + "|"
 					);
 		}
 		System.out.println("------------------------------------");
@@ -163,14 +146,14 @@ public class GoodsView {
 	}
 	
 	/**
-	 * չʾ��Ʒ�����б�
+	 * 展示物品类型列表
 	 */
 	private boolean showGoodsTypeList() {
 		GoodsType[] types = this.gtService.queryGoodsTypesList(null);
 		//��ʼ�б�չʾ
 		System.out.println("------------------------------------");
 		if(types.length == 0) {
-			System.out.println("����Ʒ������Ϣ�������������Ʒ���ͣ�");
+			System.out.println("无物品类型信息，请先添加物品类型！");
 			return false;
 		}
 		for(GoodsType type : types) {
