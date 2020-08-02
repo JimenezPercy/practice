@@ -6,7 +6,7 @@ package com.joker.algorithm.sort;
  * @Author: wzp
  * @Date: 2020/8/1 8:26
  */
-public class Merge {
+public class MergeSort {
     public static void main(String[] args) {
         int[] is = {8, 3, 12, 18, -56, 23, 1, -1, 9};
 

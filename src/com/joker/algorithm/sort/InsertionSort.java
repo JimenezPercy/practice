@@ -6,7 +6,7 @@ package com.joker.algorithm.sort;
  * @Author: wzp
  * @Date: 2020/7/31 22:33
  */
-public class Insertion {
+public class InsertionSort {
     public static void main(String[] args) {
         int[] is = {8, 3, 12, 18, -56, 23, 1, -1, 9};
 

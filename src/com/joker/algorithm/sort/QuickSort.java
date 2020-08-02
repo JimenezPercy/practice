@@ -8,10 +8,9 @@ import java.util.Arrays;
  * @author wangzhipeng01
  * @date 2020-08-01 12:39
  */
-    public class Quick {
-        public static void main(String[] args) {
+public class QuickSort {
+    public static void main(String[] args) {
         int[] is = {8, 3, 12, 18, -56, 23, 1, -1, 9};
-
         quickSortBoundary(is, 0, is.length - 1);
 
         for (int t : is) {
@@ -38,25 +37,20 @@ import java.util.Arrays;
                 //标注第一个大于基准值下标
                 index = i;
             } else if (is[i] < is[left] && index != left) {
-                swap(is, i, index);
-                if (i != index + 1) {
-                    //i指向的数据并非标注值的下一个，说明有连续且大于基准值的序列
-                    index++;
-                } else {
+                //i指向的数据并非标注值的下一个，说明有连续且大于基准值的序列
+                swap(is, i, index++);
+                if (is[index] < is[left]) {
                     //说明i前面没有其他大于基准值的数据
                     index = left;
                 }
-                System.out.println(Arrays.toString(is));
-                System.out.println(index);
             }
         }
 
         //待排序的值均小于基准值时，
         if (index == left) {
-            index = right+1;
-        }
-        //index指向的是第一个大于基准值的数据
-        if (index > left+1) {
+            swap(is, left, right);
+        } else if (index > left + 1) {
+            //index指向的是第一个大于基准值的数据
             swap(is, left, index - 1);
         }
         //递归排序左右子序列
