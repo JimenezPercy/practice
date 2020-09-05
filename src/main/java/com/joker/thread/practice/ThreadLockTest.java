@@ -6,7 +6,7 @@ package com.joker.thread.practice;
  */
 public class ThreadLockTest {
     public static void main(String[] args) {
-        for(int i=0;i<10000;i++){
+        for (int i = 0; i < 100; i++) {
             new ThreadTest1().start();
         }
 //        for(int i=0;i<10000;i++){
@@ -15,7 +15,7 @@ public class ThreadLockTest {
     }
 }
 
-class ThreadTest1 extends Thread{
+class ThreadTest1 extends Thread {
 
     public void run() {
         System.out.println(Thread.currentThread().getName());
@@ -23,7 +23,7 @@ class ThreadTest1 extends Thread{
     }
 }
 
-class ThreadTest2 implements Runnable{
+class ThreadTest2 implements Runnable {
 
     public void run() {
         System.out.println(Thread.currentThread().getName());
@@ -31,21 +31,25 @@ class ThreadTest2 implements Runnable{
     }
 }
 
-class Test{
-    private static Test t=new Test();
-    private Test(){}
+class Test {
+    private static Test t = new Test();
 
-    public synchronized static Test getTest(){
+    private Test() {
+    }
+
+    public synchronized static Test getTest() {
         return t;
     }
-int i=0;
-    public void add(){
+
+    int i = 0;
+
+    public synchronized void add() {
 
         System.out.println(++i);
 
     }
 
-    public void sub(){
+    public void sub() {
         System.out.println(--i);
     }
 }
