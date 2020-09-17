@@ -16,12 +16,14 @@ public class Request implements Serializable {
 
     private Integer id;
     private String name;
+    private String message;
 
     @Override
     public String toString() {
         return "Request{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", message='" + message + '\'' +
                 '}';
     }
 }
