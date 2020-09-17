@@ -18,9 +18,10 @@ public class Test {
 //        new Thread(new Producer(queue,2000)).start();
 
         //锁机制实现
-        Resource resource = new Resource(3);
-        new Thread(new c(resource)).start();
-        new Thread(new p(resource)).start();
+//        Resource resource = new Resource(3);
+//        new Thread(new c(resource)).start();
+//        new Thread(new p(resource)).start();
+
     }
 }
 
