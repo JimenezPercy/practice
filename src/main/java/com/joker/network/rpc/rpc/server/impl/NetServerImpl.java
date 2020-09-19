@@ -38,63 +38,23 @@ public class NetServerImpl implements NetServer {
     }
 
     //容器及其初始化
-    private static Map<String, Class<?>> beans = new HashMap<String, Class<?>>();
+    protected static Map<String, Class<?>> beans = new HashMap<String, Class<?>>();
 
     static {
         beans.put(UserService.class.getName(), UserServiceImpl.class);
     }
 
     public void recv(int port) {
-        ObjectInputStream in = null;
-        ObjectOutputStream out = null;
         try {
             //正常启动服务
             this.server = new ServerSocket(port);
             while (true) {
                 //获取远程监听
                 this.serverSocket = this.server.accept();
-                //接收ServiceInformation
-                in = new ObjectInputStream(this.serverSocket.getInputStream());
-
-                String className = in.readUTF();//类名
-                String methodName = in.readUTF();//方法名
-                Class<?>[] argTypes = (Class<?>[]) in.readObject();//参数类型
-                Object[] args = (Object[]) in.readObject();//参数
-
-                Class clazz = null;
-                //要到实例容器中匹配服务
-                //原则上，应该有一个容器，如map，其中包含了所有待引用的接口实现
-                //可以根据接口名获取对应的实现类
-                for (String cName : beans.keySet()) {
-                    //模拟从容器当中拿出来的
-                    if (className.equals(cName)) {
-                        clazz = beans.get(cName);
-                    }
-                }
-                //获取要执行的方法
-                Method method = clazz.getMethod(methodName, argTypes);
-                //执行对应方法
-                Object returnObj = method.invoke(clazz.newInstance(), args);
-                //把得到的返回值写出去
-                out = new ObjectOutputStream(this.serverSocket.getOutputStream());
-                out.writeObject(returnObj);
-                out.flush();
-                //服务关闭
-                this.serverSocket.close();
+                new Thread(new RecvThread(serverSocket)).start();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -114,7 +74,7 @@ public class NetServerImpl implements NetServer {
             Object[] args = serviceInformation.getArgs();
 
             //输出流
-            out=new ObjectOutputStream(this.clientSocket.getOutputStream());
+            out = new ObjectOutputStream(this.clientSocket.getOutputStream());
 
             //读写顺序需保持一致
             out.writeUTF(className);//类名
@@ -123,8 +83,8 @@ public class NetServerImpl implements NetServer {
             out.writeObject(args);//参数
 
             //输入流
-            in=new ObjectInputStream(this.clientSocket.getInputStream());
-            Object returnObj=in.readObject();
+            in = new ObjectInputStream(this.clientSocket.getInputStream());
+            Object returnObj = in.readObject();
 
             return returnObj;
         } catch (Exception e) {
@@ -137,7 +97,7 @@ public class NetServerImpl implements NetServer {
                 if (out != null) {
                     out.close();
                 }
-                if( this.clientSocket!=null){
+                if (this.clientSocket != null) {
                     this.clientSocket.close();
                 }
             } catch (IOException e) {
@@ -145,5 +105,64 @@ public class NetServerImpl implements NetServer {
             }
         }
         return null;
+    }
+}
+
+class RecvThread implements Runnable{
+
+    private Socket server;
+
+    public RecvThread(Socket server) {
+        this.server = server;
+    }
+
+    public void run() {
+        ObjectInputStream in = null;
+        ObjectOutputStream out = null;
+        try {
+            //接收ServiceInformation
+            in = new ObjectInputStream(this.server.getInputStream());
+
+            String className = in.readUTF();//类名
+            String methodName = in.readUTF();//方法名
+            Class<?>[] argTypes = (Class<?>[]) in.readObject();//参数类型
+            Object[] args = (Object[]) in.readObject();//参数
+
+            Class clazz = null;
+            //要到实例容器中匹配服务
+            //原则上，应该有一个容器，如map，其中包含了所有待引用的接口实现
+            //可以根据接口名获取对应的实现类
+            for (String cName : NetServerImpl.beans.keySet()) {
+                //模拟从容器当中拿出来的
+                if (className.equals(cName)) {
+                    clazz = NetServerImpl.beans.get(cName);
+                }
+            }
+            //获取要执行的方法
+            Method method = clazz.getMethod(methodName, argTypes);
+            //执行对应方法
+            Object returnObj = method.invoke(clazz.newInstance(), args);
+            //把得到的返回值写出去
+            out = new ObjectOutputStream(this.server.getOutputStream());
+            out.writeObject(returnObj);
+            out.flush();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+                if (out != null) {
+                    out.close();
+                }
+                if (this.server != null) {
+                    this.server.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
