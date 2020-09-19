@@ -14,6 +14,8 @@ public class RPC {
      * @return
      */
     public static Object rpc(final Class<?> clazz,String url,int port){
-        return null;
+        //通过动态代理，给对应接口一个代理类
+        //这个代理类的目的是调用通讯类的send
+        return new RPCProxy().send(clazz, url, port);
     }
 }
