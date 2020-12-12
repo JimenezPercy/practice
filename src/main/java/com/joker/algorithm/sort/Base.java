@@ -20,7 +20,7 @@ public class Base {
     public static int[] data(int num) {
         int[] data = new int[num];
         for (int i = 0; i < num; i++) {
-            data[i] = (int) ((Math.random() * 2 - 1) * 100);
+            data[i] = (int) ((Math.random() * 2 - 1) * num);
         }
 
         return data;
