@@ -22,7 +22,7 @@ public class Test {
 
     /**
      * 冒泡
-     * 执行时间：113ms
+     * 执行时间：113ms 119ms 112ms 112ms 121ms 116ms 117ms 113ms 113ms 116ms
      * @param data
      */
     private static void bubble(int[] data) {
