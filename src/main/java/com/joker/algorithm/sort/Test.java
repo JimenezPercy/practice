@@ -1,5 +1,7 @@
 package com.joker.algorithm.sort;
 
+import com.joker.reflect.practice.Person;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -13,11 +15,15 @@ public class Test {
 
     public static void main(String[] args) {
         data = Base.data(10000);
+        System.out.println(Arrays.toString(data));
         long startTime = new Date().getTime();
 //        bubble();//冒泡
 //        selection();//选择
 //        insertion();//插入
-        shells(4);//希尔
+//        shells(4);//希尔
+//        merge();//归并
+//        quick();//快速
+        heap();//堆
         long endTime = new Date().getTime();
         System.out.println(Arrays.toString(data));
         System.out.println("执行时间：" + (endTime - startTime) + "ms");
@@ -25,6 +31,168 @@ public class Test {
 
 //        test();
     }
+
+    /**
+     * 堆排序
+     * 数据规模10000，执行时间：1ms 2ms 1ms 1ms 1ms 0ms 1ms 1ms 1ms 1ms
+     * 数据规模100000，执行时间：11ms 10ms 10ms 9ms 8ms 8ms 9ms 8ms 8ms 8ms
+     * 数据规模1000000，执行时间：121ms 114ms 108ms 110ms 122ms 121ms 127ms 110ms 114ms 112ms
+     */
+    private static void heap() {
+        for (int i = data.length / 2 - 1; i >= 0; i--) {
+            adjust(i, data.length);
+        }
+
+        for (int i = data.length - 1; i >= 0; i--) {
+            swap(0, i);
+            adjust(0, i);
+        }
+    }
+
+    /**
+     * 堆排序，调整
+     */
+    private static void adjust(int k, int length) {
+        //堆顶
+        int temp = data[k];
+
+        for (int i = 2 * k + 1; i < length; i = 2 * i + 1) {
+            if (i < length - 1 && data[i] < data[i + 1]) {
+                i++;
+            }
+            if (data[i] > temp) {
+                data[k] = data[i];
+                k = i;
+            } else {
+                break;
+            }
+
+        }
+        data[k] = temp;
+    }
+
+    /**
+     * 快速排序
+     * 数据规模10000，执行时间：1ms 1ms 1ms 1ms 1ms 1ms 1ms 1ms 1ms 1ms
+     * 数据规模100000，执行时间：15ms 8ms 6ms 7ms 7ms 7ms 6ms 7ms 7ms 7ms
+     * 数据规模1000000，执行时间：107ms 81ms 80ms 79ms 80ms 82ms 80ms 81ms 83ms 79ms
+     */
+    private static void quick() {
+        quickSort(0, data.length - 1);
+    }
+
+    private static void quickSort(int left, int right) {
+        if (left >= right) {
+            return;
+        }
+        //基准值
+        pivot(left, right);
+
+        int pivot = right - 1;
+        int i = left + 1;
+        int j = pivot;
+
+        if (i >= j) {
+            return;
+        }
+
+        while (i < j) {
+            while (data[i] < data[pivot] && i < pivot) {
+                i++;
+            }
+            while (data[j] >= data[pivot] && j > left) {
+                j--;
+            }
+            if (i < j) {
+                swap(i, j);
+            }
+        }
+        //交换左指针指向的值和基准值，此时基准值在最终位置
+        swap(i, pivot);
+        pivot = i;
+        quickSort(left, pivot - 1);
+        quickSort(pivot + 1, right);
+    }
+
+    /**
+     * 获取基准值，
+     */
+    private static void pivot(int left, int right) {
+        if (left >= right) {
+            return;
+        }
+        int mid = (left + right) / 2;
+
+        if (data[left] > data[mid]) {
+            swap(left, mid);
+        }
+
+        if (data[mid] > data[right]) {
+            swap(mid, right);
+        }
+
+        if (data[left] > data[mid]) {
+            swap(left, mid);
+        }
+        //将基准值放在待排序列末尾
+        swap(mid, right - 1);
+    }
+
+    /**
+     * 归并排序
+     * 数据规模10000，执行时间：6ms 3ms 2ms 3ms 2ms 4ms 2ms 10ms 3ms 2ms
+     * 数据规模100000，执行时间：29ms 11ms 10ms 13ms 9ms 10ms 10ms 10ms 9ms 10ms
+     * 数据规模1000000，执行时间：123ms 106ms 107ms 108ms 113ms 112ms 116ms 106ms 106ms 105ms
+     */
+    private static void merge() {
+        int[] temp = new int[data.length];
+
+        mergeSeparateSort(0, data.length - 1, temp);
+    }
+
+    /**
+     * 归并排序，递归拆分排序
+     */
+    private static void mergeSeparateSort(int left, int right, int[] temp) {
+        //分
+        if (left >= right) {
+            return;
+        }
+        int mid = (left + right) / 2;
+        mergeSeparateSort(left, mid, temp);
+        mergeSeparateSort(mid + 1, right, temp);
+
+        //合
+        int s = left;
+        int e = mid + 1;
+        int index = 0;
+        while (s <= mid && e <= right) {
+            if (data[s] <= data[e]) {
+                temp[index++] = data[s++];
+            } else {
+                temp[index++] = data[e++];
+            }
+        }
+
+        //一边全部添加到temp中，将另一边剩下所有全部放入temp
+        if (s > mid) {
+            while (e <= right) {
+                temp[index++] = data[e++];
+            }
+        } else {
+            while (s <= mid) {
+                temp[index++] = data[s++];
+            }
+        }
+
+        //放入原数组
+        index = 0;
+        for (int i = left; i <= right; i++) {
+            data[i] = temp[index++];
+        }
+
+    }
+
 
     /**
      * 希尔排序
@@ -112,7 +280,7 @@ public class Test {
     private static void check() {
         for (int i = 0; i < data.length - 1; i++) {
             if (data[i] > data[i + 1]) {
-                System.out.println("测试失败");
+                System.out.println("测试失败====================================================================");
                 return;
             }
         }
@@ -124,14 +292,18 @@ public class Test {
      */
     private static void test() {
         for (int i = 0; i < 10; i++) {
-            data = Base.data(10000);
+            data = Base.data(1000000);
             long startTime = new Date().getTime();
 //            bubble();
 //            selection();
 //            insertion();
-            shells(4);
+//            shells(4);
+//            merge();
+//            quick();
+//            heap();
             long endTime = new Date().getTime();
             System.out.println("执行时间：" + (endTime - startTime) + "ms");
+            check();
 
         }
     }
